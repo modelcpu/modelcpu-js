@@ -1,0 +1,34 @@
+{
+  "name": "modelcpu-js",
+  "version": "0.1.0-dev",
+  "description": "CPU models in JavaScript",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "node bin/build && npm run lint:fix",
+    "build:ci": "npm run lint",
+    "lint": "eslint . && prettier . --check",
+    "lint:fix": "eslint . --fix && prettier . --write",
+    "test": "jest .",
+    "test:ci": "npm run test",
+    "test:unit-coverage": "jest test/unit --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/modelcpu/modelcpu-js.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/modelcpu/modelcpu-js/issues"
+  },
+  "homepage": "https://github.com/modelcpu/modelcpu-js#readme",
+  "dependencies": {
+    "nearley": "^2.20.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.21.0",
+    "prettier": "^2.2.1"
+  }
+}

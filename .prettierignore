@@ -1,0 +1,4 @@
+# .prettierignore
+
+# Compiled nearley grammars.
+src/models/**/assembler-grammar.js
