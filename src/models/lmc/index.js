@@ -15,7 +15,7 @@ exports.getAssembler = () => {
   return {
     assemble(source) {
       const parser = new Parser(Grammar.fromCompiled(assemblerGrammar));
-      parser.feed(source);
+      parser.feed(source.slice(-1) === '\n' ? source : `${source}\n`);
       this.compiled = parser.results[0].lines;
       this.linePointer = 0;
     },
