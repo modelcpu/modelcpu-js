@@ -1,6 +1,9 @@
 // test/test.spec.js
-const { expect } = require('chai');
+const { expect, use } = require('chai');
 const sinon = require('sinon');
+const sinonChai = require("sinon-chai");
+
+use(sinonChai);
 
 const { getAssembler } = require('../helpers');
 
@@ -48,8 +51,35 @@ describe('The lmc assembler', function () {
 
         fn({ bra });
 
-        expect(bra.called).to.equal(true);
+        expect(bra).to.have.been.called;
       });
+
+      it('should generate working code for a back reference', function () {
+        const { lines } = assembler.assemble(
+          'HLT\n label1 HLT\n HLT\n BRA label1\n'
+        );
+        const bra = sinon.spy();
+
+        const { code, fn } = lines[3];
+        fn({ bra });
+
+        expect(code).to.eql([601]);
+        expect(bra).to.have.been.calledWith(1);
+      });
+
+      it('should generate working code for a forward reference', function () {
+        const { lines } = assembler.assemble(
+          'BRA label1\n HLT\n label1 HLT\n'
+        );
+        const bra = sinon.spy();
+
+        const { code, fn } = lines[0];
+        fn({ bra });
+
+        expect(code).to.eql([602]);
+        expect(bra).to.have.been.calledWith(2);
+      });
+
     });
   });
 });

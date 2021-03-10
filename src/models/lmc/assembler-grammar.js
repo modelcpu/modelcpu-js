@@ -24,18 +24,18 @@ function getValidBranchAddress(value) {
 }
 
 function convertStringToFunction(line, labels) {
-  const [, label] = line.args;
+  const [label] = line.args;
   if (label == null) {
     throw new Error(`compiler error: not enough arguments for label instruction`);
   }
 
-  const loc = labels[label];
+  let loc = labels[label];
   if (loc == null) {
     throw new Error(`undefined label '${label}'`);
   }
 
-  // Now it is safe to use the argument as the branch location.
-  loc = getValidBranchAddress(arg);
+  // Make sure it is safe to use the argument as the branch location.
+  loc = getValidBranchAddress(loc);
   line.fn = ({ bra }) => bra(loc);
   line.code = [600 + loc];
 }
