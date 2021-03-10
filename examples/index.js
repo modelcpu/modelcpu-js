@@ -12,7 +12,7 @@ const { getAssembler } = require('../src/models/lmc');
 console.log(getAssembler);
 
 const assembler = getAssembler();
-assembler.assemble('OUT\nINP\nOUT\n');
+assembler.assemble('OUT\nmyLabel INP\nOUT\n');
 
 let context;
 do {

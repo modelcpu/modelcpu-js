@@ -1,34 +1,55 @@
 // test/test.spec.js
 const { expect } = require('chai');
+const sinon = require('sinon');
 
-const { Parser, Grammar } = require('nearley');
+const { getAssembler } = require('../helpers');
+
 const grammar = require('../../../src/models/lmc/assembler-grammar.js');
 
-function assemble(source) {
-  const parser = new Parser(Grammar.fromCompiled(grammar));
-  parser.feed(source);
-  return parser.results;
-}
-
-function assembleLine(source) {
-  return assemble(source)[0].lines[0];
-}
+const assembler = getAssembler(grammar);
 
 describe('The lmc assembler', function () {
-  describe('INP', function () {
-    it('should compile INP', function () {
-      const { type, line } = assembleLine('INP\n');
+  describe('labels', function () {
+    it('should compile labels', function () {
+      const { labels } = assembler.assemble('label0 HLT\nlabel1 HLT\n');
 
-      expect(type).to.equal('line');
-      expect(line.offset).to.equal(0);
-      expect(line.parsed).to.eql(['INP']);
-      // expect(line.opcode).to.eql([700]);
+      expect(labels).to.eql({ label0: 0, label1: 1 });
+    });
+  });
 
-      // Test operation.
-      const state = { a: 0 };
-      const terminal = { getPrompt: () => 123 }
-      line.compiled({ state, terminal });
-      expect(state.a).to.equal(123);
+  describe('HLT', function () {
+    it('should have the opcode 0', function () {
+      const { code } = assembler.assembleLine('HLT');
+
+      expect(code).to.eql([0]);
+    });
+
+    it('should call hlt() on the vm', function () {
+      const { fn } = assembler.assembleLine('HLT');
+      const hlt = sinon.spy();
+
+      fn({ hlt });
+
+      expect(hlt.called).to.be.true;
+    });
+  });
+
+  describe('BRA', function () {
+    describe('BRA address', function () {
+      it('should have the opcode 6xx', function () {
+        const { code } = assembler.assembleLine('BRA 99');
+
+        expect(code).to.eql([699]);
+      });
+
+      it('should call bra(address) on the vm', function () {
+        const { fn } = assembler.assembleLine('BRA 99');
+        const bra = sinon.spy();
+
+        fn({ bra });
+
+        expect(bra.called).to.equal(true);
+      });
     });
   });
 });
