@@ -4,7 +4,6 @@
   "description": "CPU models in JavaScript",
   "main": "index.js",
   "scripts": {
-    "dev": "vite",
     "build": "node bin/build && npm run lint:fix",
     "build:ci": "npm run lint",
     "lint": "eslint . && prettier . --check",
@@ -19,7 +18,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/modelcpu/modelcpu-js/issues"
   },
