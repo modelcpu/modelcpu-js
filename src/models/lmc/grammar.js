@@ -1,5 +1,5 @@
 /**
- * Compiled Nearly grammar for lmc assembler.
+ * Compiled Nearly grammar for lmc.
  *
  * @link https://github.com/modelcpu/modelcpu-js/blob/models/lmc/README.md
  * @copyright Copyright 2021 [ModelCPU](https://modelcpu.com/).
@@ -9,97 +9,12 @@
 // http://github.com/Hardmath123/nearley
 (function () {
 function id(x) { return x[0]; }
-
-const MAXIMUM_ADDRESS = 99;
-
-function getValidBranchAddress(value) {
-  value = parseInt(value);
-  if (value < 0) {
-    throw new Error('branch address out of bounds');
-  }
-  if (value > MAXIMUM_ADDRESS) {
-    throw new Error('branch address must not be negative');
-  }
-  return value;
-}
-
-function convertStringToFunction(line, labels) {
-  const [label] = line.args;
-  if (label == null) {
-    throw new Error(`compiler error: not enough arguments for label instruction`);
-  }
-
-  let loc = labels[label];
-  if (loc == null) {
-    throw new Error(`undefined label '${label}'`);
-  }
-
-  // Make sure it is safe to use the argument as the branch location.
-  loc = getValidBranchAddress(loc);
-  line.fn = ({ bra }) => bra(loc);
-  line.code = [600 + loc];
-}
-
-// Set labels.
-function firstPass(d) {
-  let location = 0;
-  d.labels = {};
-  d.lines.forEach((line) => {
-    const { code, labl } = line;
-    if (labl) {
-      // Add this to the symbol table.
-      d.labels[labl] = location;
-    }
-
-    if (code) {
-      // Increment the code offset.
-      line.loc = location;
-      location += code.length;
-    }
-  });
-}
-
-// Insert labels and build the code stream.
-function secondPass(d) {
-  d.compiled = [];
-  d.lines.forEach((line) => {
-    const { code, loc, fn } = line;
-    if (code) {
-      // Check we are at the right position in the code stream otherwise labels
-      // will have been calculated incorrectly.
-      if (d.compiled.length !== loc) {
-        throw new Error('compiler error: code length does not match first pass');
-      }
-
-      // If this is a label instruction, modify it for the label.
-      if (typeof fn === 'string') {
-        convertStringToFunction(line, d.labels);
-      }
-
-      if (d.compiled.length + code.length - 1 > MAXIMUM_ADDRESS) {
-        throw new Error('code too long to fit in memory');
-      }
-
-      // Now it is safe to push it to the object code stream.
-      d.compiled.push(...code);
-    }
-  });
-}
-
-// Compile the lines.
-function compile(lines) {
-  const compiled = { lines };
-  firstPass(compiled);
-  secondPass(compiled);
-  return compiled;
-}
-
 var grammar = {
     Lexer: undefined,
     ParserRules: [
     {"name": "main$ebnf$1", "symbols": ["line"]},
     {"name": "main$ebnf$1", "symbols": ["main$ebnf$1", "line"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
-    {"name": "main", "symbols": ["main$ebnf$1"], "postprocess": ([lines]) => compile(lines)},
+    {"name": "main", "symbols": ["main$ebnf$1"], "postprocess": id},
     {"name": "line$subexpression$1", "symbols": ["empty_line"]},
     {"name": "line$subexpression$1", "symbols": ["instruction_line"]},
     {"name": "line$subexpression$1", "symbols": ["label_instruction_line"]},
@@ -107,13 +22,9 @@ var grammar = {
     {"name": "empty_line", "symbols": ["_", "EOL"], "postprocess": () => ({})},
     {"name": "instruction_line", "symbols": ["_", "instruction", "_", "EOL"], "postprocess": ([, instruction]) => instruction},
     {"name": "label_instruction_line", "symbols": ["_", "LABEL", "__", "instruction", "_", "EOL"], "postprocess": ([,labl,, instruction]) => ({ labl, ...instruction })},
-    {"name": "instruction", "symbols": ["hlt"], "postprocess": ([d]) =>      ({ fn: ({ hlt }) => hlt(),  code: [0] })},
-    {"name": "instruction", "symbols": ["bra", "__", "INTEGER"], "postprocess":  ([,, arg]) => {
-            address = getValidBranchAddress(arg);
-            return { fn: ({ bra }) => bra(address), code: [600 + address], args: [arg] };
-        } },
-    {"name": "instruction", "symbols": ["bra", "__", "LABEL"], "postprocess": ([,, arg]) => ({ fn: 'braL', code: [600], args: [arg] })},
-    {"name": "argsep", "symbols": ["_", {"literal":","}, "_"], "postprocess": () => null},
+    {"name": "instruction", "symbols": ["hlt"], "postprocess": ()         => ({ fn: 'hlt' })},
+    {"name": "instruction", "symbols": ["bra", "__", "INTEGER"], "postprocess": ([,, arg]) => ({ fn: 'bra', args: [arg] })},
+    {"name": "instruction", "symbols": ["bra", "__", "LABEL"], "postprocess": ([,, arg]) => ({ fn: 'braL', args: [arg] })},
     {"name": "bra$string$1", "symbols": [{"literal":"b"}, {"literal":"r"}, {"literal":"a"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "bra", "symbols": ["bra$string$1"]},
     {"name": "bra$string$2", "symbols": [{"literal":"B"}, {"literal":"R"}, {"literal":"A"}], "postprocess": function joiner(d) {return d.join('');}},
@@ -141,6 +52,6 @@ var grammar = {
 if (typeof module !== 'undefined'&& typeof module.exports !== 'undefined') {
    module.exports = grammar;
 } else {
-   window.assemblerGrammar = grammar;
+   window.grammar = grammar;
 }
 })();

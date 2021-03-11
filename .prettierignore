@@ -1,7 +1,7 @@
 # .prettierignore
 
 # Compiled nearley grammars.
-src/models/**/assembler-grammar.js
+src/models/**/grammar.js
 
 # Test output.
 coverage

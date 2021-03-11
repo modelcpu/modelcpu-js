@@ -22,7 +22,7 @@ const modelsDir = join(__dirname, '..', 'src', 'models');
 const nearleyVersion = require('nearley/package.json').version;
 
 const assemblerCompileOptions = {
-  export: 'assemblerGrammar',
+  export: 'grammar',
   quiet: false,
   nojs: false,
   version: 'see documentation.',
@@ -42,14 +42,14 @@ async function build() {
 }
 
 async function buildOneModel(modelPath, name) {
-  const inFile = resolve(modelPath, 'assembler.ne');
-  const outFile = resolve(modelPath, 'assembler-grammar.js');
+  const inFile = resolve(modelPath, 'grammar.ne');
+  const outFile = resolve(modelPath, 'grammar.js');
 
   var input = createReadStream(inFile);
   var output = createWriteStream(outFile, { mode: 0o644 });
 
   const banner = `/**
- * Compiled Nearly grammar for ${name} assembler.
+ * Compiled Nearly grammar for ${name}.
  *
  * @link https://github.com/modelcpu/modelcpu-js/blob/models/${name}/README.md
  * @copyright Copyright 2021 [ModelCPU](https://modelcpu.com/).

@@ -12,14 +12,14 @@ class Assembler {
     parser.feed(source);
     if (parser.results.length > 1) {
       throw new Error(
-        'test compilaiton error: multiple results due to ambiguous grammer'
+        'test parsing error: multiple results due to ambiguous grammer'
       );
     }
     return parser.results[0];
   }
 
   assembleLine(source) {
-    return this.assemble(`${source}\n`).lines[0];
+    return this.assemble(`${source}\n`)[0];
   }
 }
 

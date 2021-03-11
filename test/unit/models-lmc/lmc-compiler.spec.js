@@ -1,20 +1,13 @@
-// test/test.spec.js
-// Keep these
-// lines so that
-// it is easy to
-// see the diff
-// with jest
+// test/unit/models-lmc/lmc-compiler.spec.js
 
-const { getAssembler } = require('../helpers');
+const { getCompiler } = require('../../../src/models/lmc/compiler');
 
-const grammar = require('../../../src/models/lmc/assembler-grammar.js');
+const compiler = getCompiler();
 
-const assembler = getAssembler(grammar);
-
-describe('The lmc assembler', function () {
+describe('The lmc compiler', function () {
   describe('labels', function () {
     it('should compile labels', function () {
-      const { labels } = assembler.assemble('label0 HLT\nlabel1 HLT\n');
+      const { labels } = compiler.compile('label0 HLT\nlabel1 HLT\n');
 
       expect(labels).toEqual({ label0: 0, label1: 1 });
     });
@@ -22,13 +15,13 @@ describe('The lmc assembler', function () {
 
   describe('HLT', function () {
     it('should have the opcode 0', function () {
-      const { code } = assembler.assembleLine('HLT');
+      const { code } = compiler.compileLine('HLT');
 
       expect(code).toEqual([0]);
     });
 
     it('should call hlt() on the vm', function () {
-      const { fn } = assembler.assembleLine('HLT');
+      const { fn } = compiler.compileLine('HLT');
       const hlt = jest.fn();
 
       fn({ hlt });
@@ -40,22 +33,26 @@ describe('The lmc assembler', function () {
   describe('BRA', function () {
     describe('BRA address', function () {
       it('should have the opcode 6xx', function () {
-        const { code } = assembler.assembleLine('BRA 99');
+        const { code } = compiler.compileLine('BRA 99');
 
         expect(code).toEqual([699]);
       });
 
       it('should call bra(address) on the vm', function () {
-        const { fn } = assembler.assembleLine('BRA 99');
+        const { fn } = compiler.compileLine('BRA 99');
         const bra = jest.fn();
 
         fn({ bra });
 
-        expect(bra).toHaveBeenCalled();
+        expect(bra).toHaveBeenCalledWith(99);
+      });
+
+      it('should fail for an address greater than maxBranchAddress', function () {
+        expect(() => compiler.compileLine('BRA 100')).toThrow('out of bounds');
       });
 
       it('should generate working code for a back reference', function () {
-        const { lines } = assembler.assemble(
+        const { lines } = compiler.compile(
           'HLT\n label1 HLT\n HLT\n BRA label1\n'
         );
         const bra = jest.fn();
@@ -67,8 +64,8 @@ describe('The lmc assembler', function () {
         expect(bra).toHaveBeenCalledWith(1);
       });
 
-      it.skip('should generate working code for a forward reference', function () {
-        const { lines } = assembler.assemble('BRA label1\n HLT\n label1 HLT\n');
+      it('should generate working code for a forward reference', function () {
+        const { lines } = compiler.compile('BRA label1\n HLT\n label1 HLT\n');
         const bra = jest.fn();
 
         const { code, fn } = lines[0];
