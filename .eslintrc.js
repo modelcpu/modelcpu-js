@@ -6,11 +6,11 @@ module.exports = {
     es2021: true,
     node: true,
   },
-  extends: ['eslint:recommended', 'plugin:mocha/recommended'],
+  extends: ['eslint:recommended', 'plugin:jest/recommended'],
   parserOptions: {
     ecmaVersion: 12,
     sourceType: 'module',
   },
-  plugins: ['mocha'],
+  plugins: ['jest'],
   rules: {},
 };

@@ -1,9 +1,9 @@
 // test/test.spec.js
-const { expect, use } = require('chai');
-const sinon = require('sinon');
-const sinonChai = require("sinon-chai");
-
-use(sinonChai);
+// Keep these
+// lines so that
+// it is easy to
+// see the diff
+// with jest
 
 const { getAssembler } = require('../helpers');
 
@@ -16,7 +16,7 @@ describe('The lmc assembler', function () {
     it('should compile labels', function () {
       const { labels } = assembler.assemble('label0 HLT\nlabel1 HLT\n');
 
-      expect(labels).to.eql({ label0: 0, label1: 1 });
+      expect(labels).toEqual({ label0: 0, label1: 1 });
     });
   });
 
@@ -24,16 +24,16 @@ describe('The lmc assembler', function () {
     it('should have the opcode 0', function () {
       const { code } = assembler.assembleLine('HLT');
 
-      expect(code).to.eql([0]);
+      expect(code).toEqual([0]);
     });
 
     it('should call hlt() on the vm', function () {
       const { fn } = assembler.assembleLine('HLT');
-      const hlt = sinon.spy();
+      const hlt = jest.fn();
 
       fn({ hlt });
 
-      expect(hlt.called).to.be.true;
+      expect(hlt).toHaveBeenCalled();
     });
   });
 
@@ -42,42 +42,42 @@ describe('The lmc assembler', function () {
       it('should have the opcode 6xx', function () {
         const { code } = assembler.assembleLine('BRA 99');
 
-        expect(code).to.eql([699]);
+        expect(code).toEqual([699]);
       });
 
       it('should call bra(address) on the vm', function () {
         const { fn } = assembler.assembleLine('BRA 99');
-        const bra = sinon.spy();
+        const bra = jest.fn();
 
         fn({ bra });
 
-        expect(bra).to.have.been.called;
+        expect(bra).toHaveBeenCalled();
       });
 
       it('should generate working code for a back reference', function () {
         const { lines } = assembler.assemble(
           'HLT\n label1 HLT\n HLT\n BRA label1\n'
         );
-        const bra = sinon.spy();
+        const bra = jest.fn();
 
         const { code, fn } = lines[3];
         fn({ bra });
 
-        expect(code).to.eql([601]);
-        expect(bra).to.have.been.calledWith(1);
+        expect(code).toEqual([601]);
+        expect(bra).toHaveBeenCalledWith(1);
       });
 
       it('should generate working code for a forward reference', function () {
         const { lines } = assembler.assemble(
           'BRA label1\n HLT\n label1 HLT\n'
         );
-        const bra = sinon.spy();
+        const bra = jest.fn();
 
         const { code, fn } = lines[0];
         fn({ bra });
 
-        expect(code).to.eql([602]);
-        expect(bra).to.have.been.calledWith(2);
+        expect(code).toEqual([602]);
+        expect(bra).toHaveBeenCalledWith(2);
       });
 
     });
