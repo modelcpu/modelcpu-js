@@ -1,5 +1,8 @@
 # .eslintignore
 
+# Distribution.
+dist
+
 # Compiled nearley grammars.
 src/models/**/grammar.js
 

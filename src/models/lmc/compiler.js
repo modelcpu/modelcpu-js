@@ -8,9 +8,9 @@
  * @license MIT
  */
 
-const Compiler = require('../../compiler');
+import { Compiler } from '../../compiler';
 
-const grammar = require('./grammar.js');
+import * as grammar from './grammar';
 
 const config = {
   maxBranchAddress: 99,
@@ -33,10 +33,10 @@ const instructions = {
 };
 
 // Compile the lines.
-exports.getCompiler = () => {
+export function getCompiler() {
   return new Compiler({
     instructions,
     grammar,
     config,
   });
-};
+}

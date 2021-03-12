@@ -1,6 +1,6 @@
 // src/compiler.js
 
-const { Parser, Grammar } = require('nearley');
+import { Parser, Grammar } from 'nearley';
 
 const defaultConfig = {
   minBranchAddress: 0,
@@ -129,4 +129,4 @@ class Compiler {
   }
 }
 
-module.exports = Compiler;
+export { Compiler };

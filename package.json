@@ -1,10 +1,13 @@
 {
-  "name": "modelcpu-js",
+  "name": "modelcpu",
   "version": "0.1.0-dev",
   "description": "CPU models in JavaScript",
-  "main": "index.js",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "browser": "dist/modelcpu.min.js",
   "scripts": {
-    "build": "node bin/build && npm run lint:fix",
+    "build": "npm run lint:fix && rollup -c",
+    "build:grammars": "node bin/build-grammars && npm run lint:fix",
     "build:ci": "npm run lint",
     "lint": "eslint . && prettier . --check",
     "lint:fix": "eslint . --fix && prettier . --write",
@@ -27,9 +30,17 @@
     "nearley": "^2.20.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.13.10",
+    "@babel/preset-env": "^7.13.10",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-commonjs": "^17.1.0",
+    "@rollup/plugin-json": "^4.1.0",
+    "babel-jest": "^26.6.3",
     "eslint": "^7.21.0",
     "eslint-plugin-jest": "^24.2.1",
     "jest": "^26.6.3",
-    "prettier": "^2.2.1"
+    "prettier": "^2.2.1",
+    "rollup": "^2.41.1",
+    "rollup-plugin-terser": "^7.0.2"
   }
 }

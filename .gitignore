@@ -2,5 +2,8 @@
 
 node_modules
 
+# Distribution.
+dist
+
 # Test output.
 coverage
