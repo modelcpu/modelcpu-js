@@ -5,7 +5,7 @@ import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 // import resolve from '@rollup/plugin-node-resolve';
-// import { terser } from 'rollup-plugin-terser';
+import { terser } from 'rollup-plugin-terser';
 
 import pkg from './package.json';
 
@@ -34,6 +34,12 @@ const banner = `/*! ${pkg.name} v${pkg.version} ${datetime}
  */
 `;
 
+const plugins = [
+  // resolve(), // so Rollup can find CommonJS modules.
+  commonjs(), // so Rollup can convert CommonJS to ES modules.
+  json(),
+];
+
 export default [
   // browser-friendly iife build
   {
@@ -51,15 +57,15 @@ export default [
       },
     ],
     plugins: [
-      // resolve(), // so Rollup can find CommonJS modules.
-      commonjs(), // so Rollup can convert CommonJS to ES modules.
+      ...plugins,
+
       babel({
         babelHelpers: 'bundled',
         presets: [['@babel/preset-env', { targets }]],
         exclude: 'node_modules/**',
       }),
-      json(),
-      // terser(),
+
+      terser(),
     ],
   },
 
@@ -76,14 +82,13 @@ export default [
       },
     ],
     plugins: [
-      // resolve(), // so Rollup can find CommonJS modules.
-      // commonjs(), // so Rollup can convert CommonJS to ES modules.
+      ...plugins,
+
       babel({
         babelHelpers: 'bundled',
         presets: [['@babel/preset-env', { targets }]],
         exclude: 'node_modules/**',
       }),
-      json(),
     ],
   },
 
@@ -101,14 +106,13 @@ export default [
       },
     ],
     plugins: [
-      // resolve(), // so Rollup can find CommonJS modules.
-      // commonjs(), // so Rollup can convert CommonJS to ES modules.
+      ...plugins,
+
       babel({
         babelHelpers: 'bundled',
         presets: [['@babel/preset-env', { targets: { node } }]],
         exclude: 'node_modules/**',
       }),
-      json(),
     ],
   },
 ];

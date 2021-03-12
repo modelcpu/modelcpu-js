@@ -12,7 +12,7 @@
 - ✓ ~~Build a compiler from IR code to vm function calls.~~
 - Implement all LMC instrucitons.
 - Build a LMC virtual machine.
-- Create iife modules for the browser (move to ES6 modules).
+- ✓ ~~Create iife modules for the browser (move to ES6 modules).~~
 
 ### Consider v0.2.0
 
